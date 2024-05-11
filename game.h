@@ -22,6 +22,14 @@ struct Cheese {
         rect.h = CHEESE_SIZE;
         rect.w = CHEESE_SIZE;
     }
+    void respawn() {
+        rect.x = rand() % (SCREEN_WIDTH - CHEESE_SIZE);
+        rect.y = rand() % (SCREEN_HEIGHT - CHEESE_SIZE);
+    }
+    void updatePosition() {
+        rect.x = rand() % (SCREEN_WIDTH - CHEESE_SIZE);
+        rect.y = rand() % (SCREEN_HEIGHT - CHEESE_SIZE);
+    }
 };
 
 struct Mouse {
@@ -84,3 +92,4 @@ bool gameOver(const Mouse& mouse) {
 }
 
 #endif // GAME_H
+
