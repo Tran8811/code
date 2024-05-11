@@ -1,7 +1,4 @@
 
-#include <iostream>
-#include <SDL.h>
-#include <SDL_image.h>
 #include "graphics.h"
 #include "defs.h"
 #include "game.h"
@@ -84,7 +81,6 @@ int main(int argc, char *argv[]) {
         if (mouse.canEat(cheese)){
                 mouse.grow();
          cheese.respawn();
-         cheese.updatePosition();
         }
 
         // Render mouse and cheese textures on screen
@@ -104,3 +100,4 @@ int main(int argc, char *argv[]) {
     graphics.quit();
     return 0;
 }
+
