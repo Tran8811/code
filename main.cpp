@@ -5,8 +5,8 @@
 #include "defs.h"
 #include "game.h"
 #include "score.h"
+#include<fstream>
 using namespace std;
-
 
 int main(int argc, char *argv[]) {
     // Khởi tạo SDL và SDL_ttf
@@ -24,6 +24,8 @@ int main(int argc, char *argv[]) {
     if (font == nullptr) {
         cerr << "Failed to load font. SDL_ttf Error: " << TTF_GetError() << endl;
         graphics.quit();
+        TTF_Quit();
+        SDL_Quit();
         return 1;
     }
 
@@ -51,6 +53,12 @@ int main(int argc, char *argv[]) {
     }
 
     int score = 0; // Biến để lưu điểm
+    int highestScore = 0; // Biến để lưu điểm cao nhất
+    ifstream inFile("highestscore.txt");
+    if (inFile.is_open()) {
+        inFile >> highestScore;
+        inFile.close();
+    }
 
     bool quit = false;
     SDL_Event event;
@@ -81,7 +89,7 @@ int main(int argc, char *argv[]) {
         }
 
         // Load texture cho con chuột tương ứng với hướng mới
-       std::string mouseTexturePath;
+        std::string mouseTexturePath;
         switch (currentDirection) {
             case 0:
                 mouseTexturePath = "C:\\Users\\Admin\\Desktop\\img\\mouserightframe1.png";
@@ -104,14 +112,23 @@ int main(int argc, char *argv[]) {
             cheese.respawn();
             //cheese.updatePosition();
             score++; // Tăng điểm khi ăn phô mai
+            if (score > highestScore) {
+                highestScore = score; // Cập nhật điểm cao nhất nếu điểm hiện tại vượt qua điểm cao nhất
+                // Lưu điểm cao nhất vào tập tin
+                ofstream outFile("highestscore.txt");
+                if (outFile.is_open()) {
+                    outFile << highestScore;
+                    outFile.close();
+                }
+            }
         }
 
         // Render mouse and cheese textures on screen
         graphics.renderTexture(mouseTexture, mouse.rect.x, mouse.rect.y);
         graphics.renderTexture(cheeseTexture, cheese.rect.x, cheese.rect.y);
 
-        // Hiển thị điểm
-        renderScore(graphics, font, score);
+        // Hiển thị điểm và điểm cao nhất
+        renderScore(graphics, font, score, highestScore);
 
         // Free texture của con chuột
         SDL_DestroyTexture(mouseTexture);
@@ -129,4 +146,5 @@ int main(int argc, char *argv[]) {
     SDL_Quit();
     return 0;
 }
+
 
