@@ -4,39 +4,9 @@
 #include "graphics.h"
 #include "defs.h"
 #include "game.h"
-
+#include "score.h"
 using namespace std;
 
-// Hàm này sẽ hiển thị điểm lên màn hình
-void renderScore(const Graphics& graphics, TTF_Font* font, int score) {
-    SDL_Color textColor = {255, 255, 255}; // Màu của văn bản
-
-    // Tạo một chuỗi string từ điểm
-    string scoreText = "Score: " + to_string(score);
-
-    // Render văn bản vào một SDL_Surface
-    SDL_Surface* textSurface = TTF_RenderText_Solid(font, scoreText.c_str(), textColor);
-    if (textSurface == nullptr) {
-        cerr << "Failed to render text surface. SDL_ttf Error: " << TTF_GetError() << endl;
-        return;
-    }
-
-    // Tạo texture từ SDL_Surface
-    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(graphics.renderer, textSurface);
-    if (textTexture == nullptr) {
-        cerr << "Failed to create texture from text surface. SDL Error: " << SDL_GetError() << endl;
-        SDL_FreeSurface(textSurface);
-        return;
-    }
-
-    // Hiển thị texture lên màn hình
-    SDL_Rect textRect = {10, 10, textSurface->w, textSurface->h}; // Vị trí và kích thước của văn bản
-    SDL_RenderCopy(graphics.renderer, textTexture, NULL, &textRect);
-
-    // Giải phóng bộ nhớ
-    SDL_FreeSurface(textSurface);
-    SDL_DestroyTexture(textTexture);
-}
 
 int main(int argc, char *argv[]) {
     // Khởi tạo SDL và SDL_ttf
@@ -50,7 +20,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Load font
-    TTF_Font* font = TTF_OpenFont("C:\\MINH QUAN\\Project\\attempt\\asset\\PixelGosub-ZaRz.ttf", 28);
+    TTF_Font* font = TTF_OpenFont("C:\\Users\\Admin\\Downloads\\PixelGosub-ZaRz.ttf", 28);
     if (font == nullptr) {
         cerr << "Failed to load font. SDL_ttf Error: " << TTF_GetError() << endl;
         graphics.quit();
@@ -58,7 +28,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Load textures for cheese images
-    SDL_Texture* cheeseTexture = graphics.loadTexture("C:\\MINH QUAN\\Project\\attempt\\img\\cheese.png");
+    SDL_Texture* cheeseTexture = graphics.loadTexture("C:\\Users\\Admin\\Desktop\\img\\cheese.png");
     if (cheeseTexture == nullptr) {
         cerr << "Failed to load textures." << endl;
         graphics.quit();
@@ -71,7 +41,7 @@ int main(int argc, char *argv[]) {
 
     Mouse mouse(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
     Cheese cheese(100, 100);
-    SDL_Texture* backgroundTexture = graphics.loadTexture("C:\\MINH QUAN\\Project\\attempt\\img\\background.png");
+    SDL_Texture* backgroundTexture = graphics.loadTexture("C:\\Users\\Admin\\Desktop\\img\\background.png");
     if (backgroundTexture == nullptr) {
         cerr << "Failed to load background texture." << endl;
         graphics.quit();
@@ -114,16 +84,16 @@ int main(int argc, char *argv[]) {
        std::string mouseTexturePath;
         switch (currentDirection) {
             case 0:
-                mouseTexturePath = "C:\\MINH QUAN\\Project\\attempt\\img\\mouserightframe1.png";
+                mouseTexturePath = "C:\\Users\\Admin\\Desktop\\img\\mouserightframe1.png";
                 break;
             case 1:
-                mouseTexturePath = "C:\\MINH QUAN\\Project\\attempt\\img\\mouseleftframe1.png";
+                mouseTexturePath = "C:\\Users\\Admin\\Desktop\\img\\mouseleftframe1.png";
                 break;
             case 2:
-                mouseTexturePath = "C:\\MINH QUAN\\Project\\attempt\\img\\mouseupframe1.png";
+                mouseTexturePath = "C:\\Users\\Admin\\Desktop\\img\\mouseupframe1.png";
                 break;
             case 3:
-                mouseTexturePath = "C:\\MINH QUAN\\Project\\attempt\\img\\mousedownframe1.png";
+                mouseTexturePath = "C:\\Users\\Admin\\Desktop\\img\\mousedownframe1.png";
                 break;
         }
         SDL_Texture* mouseTexture = graphics.loadTexture(mouseTexturePath.c_str());
@@ -159,3 +129,4 @@ int main(int argc, char *argv[]) {
     SDL_Quit();
     return 0;
 }
+
