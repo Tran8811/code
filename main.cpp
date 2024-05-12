@@ -109,6 +109,7 @@ int main(int argc, char *argv[]) {
         mouse.move();
         if (mouse.canEat(cheese)){
             cheese.respawn();
+            mouse.grow();
             score++; // Tăng điểm khi ăn phô mai
             if (score > highestScore) {
                 highestScore = score; // Cập nhật điểm cao nhất nếu điểm hiện tại vượt qua điểm cao nhất
