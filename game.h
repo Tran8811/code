@@ -5,12 +5,9 @@
 #define CHEESE_SIZE 10
 #define MOUSE_SIZE 30
 
-bool inside(int x, int y, SDL_Rect r) {
-    return x > r.x && x < r.x+r.w && y > r.y && y < r.y+r.h;
-}
 
 bool overlap(const SDL_Rect& r1, const SDL_Rect& r2) {
-    return !(r1.x + r1.w <= r2.x || r1.x >= r2.x + r2.w ||
+    return !(r1.x+ r1.w <= r2.x || r1.x >= r2.x + r2.w ||
              r1.y + r1.h <= r2.y || r1.y >= r2.y + r2.h);
 }
 
@@ -24,8 +21,10 @@ struct Cheese {
         rect.w = CHEESE_SIZE;
     }
     void respawn() {
-    rect.x = rand() % (SCREEN_WIDTH - CHEESE_SIZE);
-    rect.y = rand() % (SCREEN_HEIGHT - CHEESE_SIZE);
+    int maxX = SCREEN_WIDTH - CHEESE_SIZE-10;
+    int maxY = SCREEN_HEIGHT - CHEESE_SIZE-40;
+    rect.x = rand() % maxX;
+    rect.y = rand() % maxY;
 }
 };
 
@@ -89,4 +88,3 @@ bool gameOver(const Mouse& mouse) {
 }
 
 #endif // GAME_H
-
