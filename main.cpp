@@ -1,11 +1,14 @@
 #include <iostream>
+#include <fstream>
+
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
+
 #include "graphics.h"
 #include "defs.h"
 #include "game.h"
 #include "score.h"
-#include<fstream>
 #include "window.h"
 #include "menu.h"
 
@@ -19,9 +22,12 @@ int main(int argc, char *argv[]) {
     appWindow.createWindow("Menu Demonstration", 800, 600);
 
     EngineMenu engineMenu(appWindow.renderer, appWindow.mainWindow);
-    engineMenu.initSplashScreen("Press Enter to start", "Jerry_no_Tom", "C:\\Users\\Admin\\Downloads\\PixelGosub-ZaRz.ttf", "C:\\Users\\Admin\\Desktop\\img\\background.png");
+    engineMenu.initSplashScreen("Press Enter to start", "Jerry_no_Tom", "PixelGosub-ZaRz.ttf", "background.png");
+
+    Graphics graphics;
 
     bool enterPressed = false; // Variable to check if Enter key is pressed
+
     while (!quit && !enterPressed) {
         SDL_PollEvent(&event);
         if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE) {
@@ -46,13 +52,12 @@ int main(int argc, char *argv[]) {
     SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
 
-    Graphics graphics;
     if (!graphics.init()) {
         cerr << "Failed to initialize graphics." << endl;
         return 1;
     }
 
-    TTF_Font* font = TTF_OpenFont("C:\\Users\\Admin\\Downloads\\PixelGosub-ZaRz.ttf", 28);
+    TTF_Font* font = TTF_OpenFont("PixelGosub-ZaRz.ttf", 28);
     if (font == nullptr) {
         cerr << "Failed to load font. SDL_ttf Error: " << TTF_GetError() << endl;
         graphics.quit();
@@ -61,7 +66,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    SDL_Texture* cheeseTexture = graphics.loadTexture("C:\\Users\\Admin\\Desktop\\img\\cheese.png");
+    SDL_Texture* cheeseTexture = graphics.loadTexture("cheese.png");
     if (cheeseTexture == nullptr) {
         cerr << "Failed to load textures." << endl;
         graphics.quit();
@@ -74,7 +79,7 @@ int main(int argc, char *argv[]) {
 
     Mouse mouse(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
     Cheese cheese(100, 100);
-    SDL_Texture* backgroundTexture = graphics.loadTexture("C:\\Users\\Admin\\Desktop\\img\\background.png");
+    SDL_Texture* backgroundTexture = graphics.loadTexture("background.png");
     if (backgroundTexture == nullptr) {
         cerr << "Failed to load background texture." << endl;
         graphics.quit();
@@ -90,6 +95,8 @@ int main(int argc, char *argv[]) {
         inFile >> highestScore;
         inFile.close();
     }
+
+    Mix_Chunk* eatSound = graphics.loadSound("eat.wav");
 
     while (!quit && !gameOver(mouse)) {
         graphics.prepareScene();
@@ -120,16 +127,16 @@ int main(int argc, char *argv[]) {
         std::string mouseTexturePath;
         switch (currentDirection) {
             case 0:
-                mouseTexturePath = "C:\\Users\\Admin\\Desktop\\img\\mouserightframe1.png";
+                mouseTexturePath = "mouserightframe1.png";
                 break;
             case 1:
-                mouseTexturePath = "C:\\Users\\Admin\\Desktop\\img\\mouseleftframe1.png";
+                mouseTexturePath = "mouseleftframe1.png";
                 break;
             case 2:
-                mouseTexturePath = "C:\\Users\\Admin\\Desktop\\img\\mouseupframe1.png";
+                mouseTexturePath = "mouseupframe1.png";
                 break;
             case 3:
-                mouseTexturePath = "C:\\Users\\Admin\\Desktop\\img\\mousedownframe1.png";
+                mouseTexturePath = "mousedownframe1.png";
                 break;
         }
         SDL_Texture* mouseTexture = graphics.loadTexture(mouseTexturePath.c_str());
@@ -138,6 +145,7 @@ int main(int argc, char *argv[]) {
         if (mouse.canEat(cheese)) {
             cheese.respawn();
             mouse.grow();
+            graphics.play(eatSound);
             score++; // Increase score when cheese is eaten
             if (score > highestScore) {
                 highestScore = score; // Update highest score if current score exceeds highest score
@@ -168,7 +176,7 @@ int main(int argc, char *argv[]) {
     gameOverWindow.createWindow("Game Over", 800, 600);
     SDL_RenderClear(gameOverWindow.renderer);
 
-    TTF_Font* gameOverFont = TTF_OpenFont("C:\\Users\\Admin\\Downloads\\PixelGosub-ZaRz.ttf", 72);
+    TTF_Font* gameOverFont = TTF_OpenFont("PixelGosub-ZaRz.ttf", 72);
     if (gameOverFont == nullptr) {
         cerr << "Failed to load font. SDL_ttf Error: " << TTF_GetError() << endl;
         gameOverWindow.destroyWindow();
@@ -178,6 +186,8 @@ int main(int argc, char *argv[]) {
     }
 
     // Render Game Over message
+    Mix_Chunk* deadSound = graphics.loadSound("dead.wav");
+    graphics.play(deadSound);
     SDL_Color textColor = {255, 255, 255, 255}; // White color
     SDL_Surface* gameOverSurface = TTF_RenderText_Solid(gameOverFont, "Game Over", textColor);
     SDL_Texture* gameOverTexture = SDL_CreateTextureFromSurface(gameOverWindow.renderer, gameOverSurface);
@@ -204,6 +214,8 @@ int main(int argc, char *argv[]) {
         SDL_Delay(10);
     }
 
+    Mix_FreeChunk(eatSound);
+    Mix_FreeChunk(deadSound);
     SDL_DestroyTexture(gameOverTexture);
     TTF_CloseFont(gameOverFont);
     gameOverWindow.destroyWindow();
