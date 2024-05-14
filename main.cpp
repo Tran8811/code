@@ -6,9 +6,54 @@
 #include "game.h"
 #include "score.h"
 #include<fstream>
+#include "window.h"
+
+#include "menu.h"
 using namespace std;
 
 int main(int argc, char *argv[]) {
+    bool quit = false;
+
+    SDL_Event event;
+
+    EngineWindow appWindow;
+    appWindow.createWindow("Menu Demonstration", 800, 600);
+
+    EngineMenu engineMenu(appWindow.renderer, appWindow.mainWindow);
+
+    engineMenu.initSplashScreen("Press Enter to start", "Jerry_no_Tom", "C:\\Users\\Admin\\Downloads\\PixelGosub-ZaRz.ttf", "C:\\Users\\Admin\\Desktop\\img\\background.png");
+
+ bool enterPressed = false; // Biến để kiểm tra xem phím Enter đã được nhấn chưa
+
+while (!quit && !enterPressed) {
+    SDL_PollEvent(&event);
+    if(event.type==SDL_WINDOWEVENT && event.window.event==SDL_WINDOWEVENT_CLOSE){
+        quit = true;
+    }
+
+    if (event.type == SDL_KEYDOWN) {
+        if (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER) {
+            enterPressed = true; // Đánh dấu là phím Enter đã được nhấn
+        }
+    }
+
+
+        //clear the render
+        SDL_RenderClear(appWindow.renderer);
+
+        //render the splash screen
+        engineMenu.displaySplashScreen();
+
+        //render the new texture
+        SDL_RenderPresent(appWindow.renderer);
+        SDL_Delay(20);
+    }
+
+
+    engineMenu.quitSplashScreen();
+
+    appWindow.destroyWindow();
+
     // Khởi tạo SDL và SDL_ttf
     SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
@@ -60,8 +105,6 @@ int main(int argc, char *argv[]) {
         inFile.close();
     }
 
-    bool quit = false;
-    SDL_Event event;
     while (!quit && !gameOver(mouse)) {
         graphics.prepareScene();
         graphics.renderTexture(backgroundTexture, 0, 0);
@@ -145,5 +188,6 @@ int main(int argc, char *argv[]) {
     SDL_Quit();
     return 0;
 }
+
 
 
